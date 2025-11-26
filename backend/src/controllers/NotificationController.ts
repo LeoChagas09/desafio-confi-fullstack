@@ -28,22 +28,28 @@ class NotificationController {
       return res.status(201).json({ notification });
     } catch (error: any) {
       if (error instanceof ZodError) {
+        console.log('❌ [CREATE] Erro de validação:', error.issues);
         return res.status(400).json({
           error: 'Validation error',
-          details: error.issues // Agora o TS reconhece essa propriedade
+          details: error.issues
         });
       }
 
-      // Log do erro real no console para você debugar se precisar
-      console.error(error);
-
+      console.error('❌ [CREATE] Erro interno:', error);
       return res.status(500).json({ error: 'Internal server error' });
     }
   }
 
   async list(req: Request, res: Response) {
     try {
-      const { userId } = req.params;
+      // Validação do userId no path
+      const paramsSchema = z.object({
+        userId: z.string().min(3).regex(/^[a-zA-Z0-9_-]+$/, { 
+          message: "O userId deve conter apenas letras, números, - ou _" 
+        })
+      });
+
+      const { userId } = paramsSchema.parse(req.params);
       const page = Number(req.query.page) || 1;
       const limit = Number(req.query.limit) || 10;
 
@@ -54,48 +60,77 @@ class NotificationController {
       });
 
       return res.status(200).json(result);
-    } catch (error) {
+    } catch (error: any) {
+      if (error instanceof ZodError) {
+        console.log('❌ [LIST] Erro de validação no userId:', error.issues);
+        return res.status(400).json({
+          error: 'Validation error',
+          details: error.issues
+        });
+      }
+      console.error('❌ [LIST] Erro interno:', error);
       return res.status(500).json({ error: 'Internal server error' });
     }
   }
 
   async read(req: Request, res: Response) {
+    const { id } = req.params;
     try {
-      const { id } = req.params;
       await NotificationService.readNotification(id);
       return res.status(204).send(); // 204 No Content (Sucesso sem corpo)
     } catch (error: any) {
       if (error.message === 'Notification not found') {
+        console.log('⚠️  [READ] Notificação não encontrada:', id);
         return res.status(404).json({ error: 'Notification not found' });
       }
+      console.error('❌ [READ] Erro interno:', error);
       return res.status(500).json({ error: 'Internal server error' });
     }
   }
 
   async cancel(req: Request, res: Response) {
+    const { id } = req.params;
     try {
-      const { id } = req.params;
       await NotificationService.cancelNotification(id);
       return res.status(204).send();
     } catch (error: any) {
       if (error.message === 'Notification not found') {
+        console.log('⚠️  [CANCEL] Notificação não encontrada:', id);
         return res.status(404).json({ error: 'Notification not found' });
       }
+      console.error('❌ [CANCEL] Erro interno:', error);
       return res.status(500).json({ error: 'Internal server error' });
     }
   }
 
   async login(req: Request, res: Response) {
-    // Isso é apenas para simular um login e gerar o token para teste
-    const { userId } = req.body;
+    try {
+      // Validação do userId no login
+      const loginSchema = z.object({
+        userId: z.string().min(3).regex(/^[a-zA-Z0-9_-]+$/, { 
+          message: "O userId deve conter apenas letras, números, - ou _" 
+        })
+      });
 
-    if (!userId) return res.status(400).json({ error: 'userId is required' });
+      const { userId } = loginSchema.parse(req.body);
 
-    const token = jwt.sign({ id: userId }, process.env.JWT_SECRET as string, {
-      expiresIn: '1d',
-    });
+      const token = jwt.sign({ id: userId }, process.env.JWT_SECRET as string, {
+        expiresIn: '1d',
+      });
 
-    return res.json({ token });
+      console.log('✅ [LOGIN] Usuário autenticado:', userId);
+      return res.json({ token });
+    } catch (error: any) {
+      if (error instanceof ZodError) {
+        console.log('❌ [LOGIN] Erro de validação:', error.issues);
+        return res.status(400).json({
+          error: 'Validation error',
+          details: error.issues
+        });
+      }
+      console.error('❌ [LOGIN] Erro interno:', error);
+      return res.status(500).json({ error: 'Internal server error' });
+    }
   }
 }
 

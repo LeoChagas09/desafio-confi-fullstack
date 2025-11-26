@@ -20,7 +20,9 @@ class NotificationRepository {
   }
 
   async countByUserId(userId: string): Promise<number> {
-    return await Notification.countDocuments({ userId });
+    // IMPORTANTE: countDocuments não passa pelo middleware pre('find')
+    // então precisamos adicionar o filtro manualmente
+    return await Notification.countDocuments({ userId, canceledAt: null });
   }
 
   async save(notification: INotification): Promise<INotification> {

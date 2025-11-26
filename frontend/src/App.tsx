@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { useState, useEffect, useMemo } from 'react';
 import { api } from './api';
@@ -51,16 +52,32 @@ function App() {
 
   // === LOGIN ===
   const handleLogin = async (loginUserId: string) => {
-    const res = await api.post('/notifications/login', { userId: loginUserId });
-    
-    const newToken = res.data.token;
-    localStorage.setItem('auth_token', newToken);
-    localStorage.setItem('user_id', loginUserId);
-    
-    setUserId(loginUserId);
-    setToken(newToken);
-    await fetchNotifications(1);
-    toast.success('Login realizado com sucesso!');
+    try {
+      const res = await api.post('/notifications/login', { userId: loginUserId });
+      
+      const newToken = res.data.token;
+      localStorage.setItem('auth_token', newToken);
+      localStorage.setItem('user_id', loginUserId);
+      
+      setUserId(loginUserId);
+      setToken(newToken);
+      await fetchNotifications(1);
+      toast.success('Login realizado com sucesso!');
+    } catch (error: any) {
+      console.error('Erro no login:', error);
+      
+      // Trata erros de validação do backend
+      if (error.response?.data?.details) {
+        const errorMsg = error.response.data.details[0]?.message || 'Erro de validação';
+        toast.error(errorMsg);
+      } else if (error.response?.data?.error) {
+        toast.error(error.response.data.error);
+      } else {
+        toast.error('Erro ao fazer login. Tente novamente.');
+      }
+      
+      throw error; // Re-lança para o LoginForm saber que falhou
+    }
   };
 
   const handleLogout = () => {
@@ -125,7 +142,37 @@ function App() {
 
   // === TELA DE LOGIN ===
   if (!token) {
-    return <LoginForm onLogin={handleLogin} />;
+    return (
+      <>
+        <LoginForm onLogin={handleLogin} />
+        <Toaster 
+          position="top-right"
+          toastOptions={{
+            duration: 3000,
+            style: {
+              background: '#fff',
+              color: '#374151',
+              padding: '16px',
+              borderRadius: '12px',
+              boxShadow: '0 10px 25px rgba(0, 0, 0, 0.1)',
+              border: '1px solid #e5e7eb',
+            },
+            success: {
+              iconTheme: {
+                primary: '#10b981',
+                secondary: '#fff',
+              },
+            },
+            error: {
+              iconTheme: {
+                primary: '#ef4444',
+                secondary: '#fff',
+              },
+            },
+          }}
+        />
+      </>
+    );
   }
 
   // === DASHBOARD ===
