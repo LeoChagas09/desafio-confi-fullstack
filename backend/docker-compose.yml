@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  # Serviço do Banco de Dados
+  mongo:
+    image: mongo:latest
+    container_name: notificacoes_db
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - app_network
+
+  # Serviço da Aplicação (Opcional por enquanto, mas já deixamos pronto para a entrega)
+  app:
+    build: .
+    container_name: notificacoes_app
+    ports:
+      - "3000:3000"
+    environment:
+      - MONGO_URI=mongodb://mongo:27017/notificacoes
+      - PORT=3000
+    depends_on:
+      - mongo
+    networks:
+      - app_network
+    command: npm start
+
+volumes:
+  mongo_data:
+
+networks:
+  app_network:
+    driver: bridge
