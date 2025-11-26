@@ -72,13 +72,10 @@ npm run dev
 ```bash
 cd frontend
 npm install
-npm run dev
-```
 
 # Configurar variáveis de ambiente (já está criado por padrão)
 # Altere .env se precisar apontar para outro backend
 
-# Rodar em desenvolvimento
 npm run dev
 ```
 
