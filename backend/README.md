@@ -19,8 +19,8 @@ API para gerenciar notificações de usuários com operações de criar, listar,
 ### Com Docker (recomendado)
 
 ```bash
-git clone https://github.com/LeoChagas09/notificacoes-api
-cd notificacoes-api
+git clone https://github.com/LeoChagas09/desafio-confi-fullstack.git
+cd desafio-confi-fullstack/backend
 docker compose up -d
 ```
 
@@ -29,8 +29,8 @@ A API estará em `http://localhost:3000` e a documentação em `http://localhost
 ### Sem Docker
 
 ```bash
-git clone https://github.com/LeoChagas09/notificacoes-api
-cd notificacoes-api
+git clone https://github.com/LeoChagas09/desafio-confi-fullstack.git
+cd desafio-confi-fullstack/backend
 npm install
 
 # Configure .env com sua string do MongoDB

@@ -20,14 +20,37 @@ export function NotificationCard({ notification, index, onMarkAsRead, onRemove }
       exit={{ opacity: 0, x: -100 }}
       transition={{ delay: index * 0.05 }}
       layout
-      className={`group relative p-5 rounded-xl border transition-all duration-200 hover:shadow-md
+      className={`group relative p-5 rounded-xl border transition-all duration-300 hover:shadow-lg
         ${notification.read 
-          ? 'bg-gray-50 border-gray-200' 
-          : 'bg-white border-blue-200 shadow-sm border-l-4 border-l-blue-500'
+          ? 'bg-white border-gray-200 opacity-75 hover:opacity-90' 
+          : 'bg-linear-to-br from-white to-blue-50 border-blue-300 shadow-md border-l-4 border-l-blue-600'
         }
       `}
     >
-      <div className="flex justify-between items-start gap-4">
+      {/* Indicador visual de status */}
+      <div className="absolute top-3 right-3">
+        {notification.read ? (
+          <div className="flex items-center gap-1.5 px-2.5 py-1 bg-gray-100 rounded-full border border-gray-300">
+            <Check className="w-3 h-3 text-gray-500" />
+            <span className="text-[10px] font-semibold text-gray-600 uppercase tracking-wide">Lida</span>
+          </div>
+        ) : (
+          <motion.div 
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            className="flex items-center gap-1.5 px-2.5 py-1 bg-blue-500 rounded-full shadow-sm"
+          >
+            <motion.div
+              animate={{ scale: [1, 1.2, 1] }}
+              transition={{ repeat: Infinity, duration: 2 }}
+              className="w-2 h-2 bg-white rounded-full"
+            />
+            <span className="text-[10px] font-bold text-white uppercase tracking-wide">Nova</span>
+          </motion.div>
+        )}
+      </div>
+
+      <div className="flex justify-between items-start gap-4 pr-20">
         <div className="flex-1">
           <div className="flex items-center gap-2 mb-2 flex-wrap">
             <span className={`text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full
@@ -39,22 +62,13 @@ export function NotificationCard({ notification, index, onMarkAsRead, onRemove }
             `}>
               {notification.category}
             </span>
-            <span className="text-xs text-gray-400">
+            <span className={`text-xs ${notification.read ? 'text-gray-400' : 'text-gray-500 font-medium'}`}>
               {formatDistanceToNow(new Date(notification.createdAt), { addSuffix: true, locale: ptBR })}
             </span>
-            {!notification.read && (
-              <motion.span
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                className="text-[10px] bg-blue-500 text-white px-2 py-0.5 rounded-full font-bold"
-              >
-                NOVO
-              </motion.span>
-            )}
           </div>
-          <p className={`text-sm leading-relaxed
+          <p className={`text-sm leading-relaxed transition-colors
             ${notification.read 
-              ? 'text-gray-400 line-through decoration-gray-300' 
+              ? 'text-gray-500' 
               : 'text-gray-800 font-medium'
             }`}
           >
