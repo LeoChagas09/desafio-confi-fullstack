@@ -18,13 +18,30 @@ API para gerenciar notificações de usuários com operações de criar, listar,
 
 ### Com Docker (recomendado)
 
+**Opção 1: API + MongoDB em Docker**
+
 ```bash
 git clone https://github.com/LeoChagas09/desafio-confi-fullstack.git
 cd desafio-confi-fullstack/backend
 docker compose up -d
 ```
 
+Isso vai subir:
+- MongoDB na porta 27017
+- API Node.js na porta 3000
+
 A API estará em `http://localhost:3000` e a documentação em `http://localhost:3000/api-docs`.
+
+**Opção 2: Apenas MongoDB em Docker (desenvolvimento)**
+
+```bash
+# Suba apenas o MongoDB
+docker compose up -d mongo
+
+# Rode a API localmente
+npm install
+npm run dev
+```
 
 ### Sem Docker
 

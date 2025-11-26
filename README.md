@@ -28,41 +28,52 @@ Aplicação para criar, listar, marcar como lida e remover notificações. A API
 
 ## Quick Start
 
-### 1. Clonar o repositório
+### 🚀 Forma Recomendada (Backend em Docker + Frontend local)
 
 ```bash
+# 1. Clone o repositório
 git clone https://github.com/LeoChagas09/desafio-confi-fullstack.git
 cd desafio-confi-fullstack
-```
 
-### 2. Subir o Backend
-
-```bash
+# 2. Suba o backend (MongoDB + API em Docker)
 cd backend
-
-# Subir o MongoDB via Docker
 docker compose up -d
 
-# Instalar dependências
+# 3. Suba o frontend localmente (HMR rápido para desenvolvimento)
+cd ../frontend
 npm install
-
-# Rodar em modo de desenvolvimento
 npm run dev
 ```
 
-A API estará rodando em `http://localhost:3000`
+✅ Backend: `http://localhost:3000` (Swagger: `/api-docs`)  
+✅ Frontend: `http://localhost:5173`
 
-Documentação Swagger: `http://localhost:3000/api-docs`
+> **💡 Nota:** O backend está containerizado com Docker. O frontend roda localmente para melhor experiência de desenvolvimento (HMR rápido). Seria possível containerizar o frontend também com Nginx se necessário.
 
-### 3. Subir o Frontend
+---
 
-Em outro terminal:
+### 📝 Desenvolvimento Local Completo (sem Docker)
 
+Se preferir rodar localmente para desenvolvimento:
+
+**1. Backend:**
+```bash
+cd backend
+
+# Apenas MongoDB em Docker
+docker compose up -d mongo
+
+# Aplicação local
+npm install
+npm run dev
+```
+
+**2. Frontend:**
 ```bash
 cd frontend
-
-# Instalar dependências
 npm install
+npm run dev
+```
 
 # Configurar variáveis de ambiente (já está criado por padrão)
 # Altere .env se precisar apontar para outro backend
@@ -129,6 +140,8 @@ curl -X POST http://localhost:3000/api/notifications \
 ```
 .
 ├── backend/                 # API RESTful
+│   ├── Dockerfile           # 🐳 Build da API Node.js
+│   ├── docker-compose.yml   # 🐳 MongoDB + API
 │   ├── src/
 │   │   ├── controllers/     # Recebe requests HTTP
 │   │   ├── services/        # Lógica de negócio
@@ -138,7 +151,6 @@ curl -X POST http://localhost:3000/api/notifications \
 │   │   ├── routes/          # Definição de rotas
 │   │   ├── config/          # Database e Swagger
 │   │   └── interfaces/      # TypeScript DTOs
-│   ├── docker-compose.yml   # Orquestração MongoDB
 │   ├── jest.config.ts       # Configuração de testes
 │   └── README.md
 │
@@ -247,9 +259,54 @@ Frontend não possui testes automatizados no momento (ver `frontend/NOTES.md` pa
 
 **useState local:** Suficiente para o escopo atual. Se crescer, migrar para Context API ou Zustand.
 
+## 🐳 Infraestrutura Docker
+
+### Arquitetura dos Containers
+
+```
+┌─────────────────────────────────────────────┐
+│          Docker Compose Network             │
+├─────────────────────────────────────────────┤
+│                                             │
+│               ┌─────────────┐  ┌─────┐     │
+│               │   Backend   │  │Mongo│     │
+│               │   Node.js   │─→│ DB  │     │
+│               │   :3000     │  │:27017│    │
+│               └─────────────┘  └─────┘     │
+│                                             │
+└─────────────────────────────────────────────┘
+```
+
+### Backend Dockerfile
+- Node.js 22 Alpine (imagem leve ~150MB)
+- Compila TypeScript dentro do container
+- Variáveis de ambiente configuráveis
+- Healthcheck do MongoDB
+
+### Vantagens
+✅ **Setup instantâneo** - `docker compose up -d` no backend  
+✅ **Ambiente consistente** - funciona igual em qualquer máquina  
+✅ **Isolamento** - não precisa ter MongoDB instalado  
+✅ **Produção-ready** - pode subir em AWS/Azure/GCP  
+✅ **Rollback fácil** - `docker compose down && docker compose up -d`
+
+> **💡 Frontend:** Não está containerizado para manter o HMR rápido durante desenvolvimento. Seria possível adicionar Dockerfile + Nginx se necessário para produção.
+
 ## Build de Produção
 
 ### Backend
+
+**Com Docker (Recomendado):**
+
+```bash
+cd backend
+docker compose up -d
+
+# Ou com rebuild forçado
+docker compose up -d --build
+```
+
+**Sem Docker:**
 
 ```bash
 cd backend
@@ -261,7 +318,7 @@ npm run build
 npm start
 ```
 
-### Frontend
+**Frontend:**
 
 ```bash
 cd frontend

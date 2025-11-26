@@ -50,20 +50,6 @@ npm run dev
 
 Acesse `http://localhost:5173`
 
-## 🏗️ Build para Produção
-
-Para gerar a versão otimizada para produção:
-
-```bash
-npm run build
-```
-
-Para visualizar o build localmente:
-
-```bash
-npm run preview
-```
-
 ## Estrutura
 
 ```
@@ -120,12 +106,23 @@ POST http://localhost:3000/api/notifications
 
 Faça login no frontend com o mesmo userId.
 
-## Build
+## Build para Produção
+
+Para gerar a versão otimizada:
 
 ```bash
-npm run build      # Build de produção
-npm run preview    # Testar o build localmente
+npm run build
 ```
+
+Para testar o build localmente:
+
+```bash
+npm run preview
+```
+
+Os arquivos estarão em `dist/` prontos para deploy em qualquer servidor estático (Vercel, Netlify, etc).
+
+> **💡 Docker:** Este projeto não inclui Dockerfile. Se necessário containerizar para produção, seria possível criar um Dockerfile com Nginx para servir os arquivos estáticos.
 
 ## Notas
 

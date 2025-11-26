@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   # Serviço do Banco de Dados
   mongo:
@@ -11,21 +9,29 @@ services:
       - mongo_data:/data/db
     networks:
       - app_network
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
-  # Serviço da Aplicação (Opcional por enquanto, mas já deixamos pronto para a entrega)
-  app:
+  # Serviço da API Node.js
+  api:
     build: .
-    container_name: notificacoes_app
+    container_name: notificacoes_api
     ports:
       - "3000:3000"
     environment:
       - MONGO_URI=mongodb://mongo:27017/notificacoes
+      - JWT_SECRET=meu_segredo_super_secreto
       - PORT=3000
+      - NODE_ENV=production
     depends_on:
-      - mongo
+      mongo:
+        condition: service_healthy
     networks:
       - app_network
-    command: npm start
+    restart: unless-stopped
 
 volumes:
   mongo_data:
