@@ -30,11 +30,17 @@ Aplicação que permite:
 npm install
 ```
 
-Crie um `.env` (opcional - padrão já é localhost:3000):
+**Configure o arquivo `.env`:**
 
-```env
-VITE_API_URL=http://localhost:3000/api
+```bash
+# Copie o arquivo de exemplo
+cp .env.example .env
+
+# Ou crie manualmente com:
+# VITE_API_URL=http://localhost:3000/api
 ```
+
+> **Nota:** O arquivo `.env` já está criado por padrão. Só precisa alterar se quiser apontar para outro backend.
 
 Rode:
 

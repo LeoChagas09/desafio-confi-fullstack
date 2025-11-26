@@ -64,11 +64,16 @@ cd frontend
 # Instalar dependências
 npm install
 
+# Configurar variáveis de ambiente (já está criado por padrão)
+# Altere .env se precisar apontar para outro backend
+
 # Rodar em desenvolvimento
 npm run dev
 ```
 
 A aplicação estará em `http://localhost:5173`
+
+> **Nota:** O arquivo `.env` já vem configurado. Só precisa alterar se for usar um backend diferente de `localhost:3000`.
 
 ## Testando a Aplicação
 

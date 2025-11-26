@@ -15,3 +15,22 @@ api.interceptors.request.use((config) => {
     }
     return config;
 });
+
+// Interceptor de resposta: Detecta token expirado e faz logout automático
+api.interceptors.response.use(
+    (response) => response,
+    (error) => {
+        // Se receber 401 (Unauthorized), limpa o token e recarrega a página
+        if (error.response?.status === 401) {
+            const token = localStorage.getItem('auth_token');
+            // Só faz logout se havia token (evita loop na tela de login)
+            if (token) {
+                console.warn('⚠️ Token expirado ou inválido. Fazendo logout...');
+                localStorage.removeItem('auth_token');
+                localStorage.removeItem('user_id');
+                window.location.reload();
+            }
+        }
+        return Promise.reject(error);
+    }
+);

@@ -9,9 +9,29 @@ interface LoginFormProps {
 export function LoginForm({ onLogin }: LoginFormProps) {
   const [userId, setUserId] = useState(localStorage.getItem('user_id') || '');
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  const validateUserId = (value: string): string => {
+    if (value.length < 6) {
+      return 'O userId deve ter no mínimo 6 caracteres';
+    }
+    if (!/^[a-zA-Z0-9_-]+$/.test(value)) {
+      return 'Use apenas letras, números, - ou _';
+    }
+    return '';
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validação client-side
+    const validationError = validateUserId(userId);
+    if (validationError) {
+      setError(validationError);
+      return;
+    }
+    
+    setError('');
     setLoading(true);
     try {
       await onLogin(userId);
@@ -68,11 +88,19 @@ export function LoginForm({ onLogin }: LoginFormProps) {
             <input 
               type="text" 
               value={userId}
-              onChange={(e) => setUserId(e.target.value)}
+              onChange={(e) => {
+                setUserId(e.target.value);
+                setError(''); // Limpa erro ao digitar
+              }}
               placeholder="Ex: usuario_teste"
-              className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+              className={`w-full px-4 py-3 border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all ${
+                error ? 'border-red-300 bg-red-50' : 'border-gray-200'
+              }`}
               required 
             />
+            {error && (
+              <p className="text-red-500 text-xs mt-1.5 font-medium">{error}</p>
+            )}
           </motion.div>
           <motion.button 
             initial={{ opacity: 0, y: 10 }}

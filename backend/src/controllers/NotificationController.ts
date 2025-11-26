@@ -44,14 +44,19 @@ class NotificationController {
     try {
       // Validação do userId no path
       const paramsSchema = z.object({
-        userId: z.string().min(3).regex(/^[a-zA-Z0-9_-]+$/, { 
-          message: "O userId deve conter apenas letras, números, - ou _" 
+        userId: z.string().min(6).regex(/^[a-zA-Z0-9_-]+$/, { 
+          message: "O userId deve conter apenas letras, números, - ou _ (mínimo 6 caracteres)" 
         })
       });
 
+      // Validação de query params
+      const querySchema = z.object({
+        page: z.coerce.number().int().positive().max(1000).default(1),
+        limit: z.coerce.number().int().positive().max(100).default(10)
+      });
+
       const { userId } = paramsSchema.parse(req.params);
-      const page = Number(req.query.page) || 1;
-      const limit = Number(req.query.limit) || 10;
+      const { page, limit } = querySchema.parse(req.query);
 
       const result = await NotificationService.listUserNotifications({
         userId,
@@ -75,7 +80,15 @@ class NotificationController {
 
   async read(req: Request, res: Response) {
     const { id } = req.params;
+    
     try {
+      // Validação de ObjectId do MongoDB
+      if (!id.match(/^[0-9a-fA-F]{24}$/)) {
+        return res.status(400).json({ 
+          error: 'Invalid notification ID format' 
+        });
+      }
+      
       await NotificationService.readNotification(id);
       return res.status(204).send(); // 204 No Content (Sucesso sem corpo)
     } catch (error: any) {
@@ -90,7 +103,15 @@ class NotificationController {
 
   async cancel(req: Request, res: Response) {
     const { id } = req.params;
+    
     try {
+      // Validação de ObjectId do MongoDB
+      if (!id.match(/^[0-9a-fA-F]{24}$/)) {
+        return res.status(400).json({ 
+          error: 'Invalid notification ID format' 
+        });
+      }
+      
       await NotificationService.cancelNotification(id);
       return res.status(204).send();
     } catch (error: any) {
@@ -107,8 +128,8 @@ class NotificationController {
     try {
       // Validação do userId no login
       const loginSchema = z.object({
-        userId: z.string().min(3).regex(/^[a-zA-Z0-9_-]+$/, { 
-          message: "O userId deve conter apenas letras, números, - ou _" 
+        userId: z.string().min(6).regex(/^[a-zA-Z0-9_-]+$/, { 
+          message: "O userId deve conter apenas letras, números, - ou _ (mínimo 6 caracteres)" 
         })
       });
 
