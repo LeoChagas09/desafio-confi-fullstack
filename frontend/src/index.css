@@ -1,0 +1,49 @@
+@import "tailwindcss";
+
+/* Tooltip Styles */
+.tooltip {
+  position: relative;
+}
+
+.tooltip::before {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-8px);
+  padding: 6px 12px;
+  background-color: rgba(17, 24, 39, 0.95);
+  color: white;
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+  border-radius: 6px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  z-index: 1000;
+}
+
+.tooltip::after {
+  content: '';
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-2px);
+  border: 5px solid transparent;
+  border-top-color: rgba(17, 24, 39, 0.95);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  z-index: 1000;
+}
+
+.tooltip:hover::before,
+.tooltip:hover::after {
+  opacity: 1;
+  transform: translateX(-50%) translateY(-4px);
+}
+
+.tooltip:hover::after {
+  transform: translateX(-50%) translateY(2px);
+}

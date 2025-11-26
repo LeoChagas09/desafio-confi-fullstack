@@ -1,0 +1,102 @@
+import { useState } from 'react';
+import { motion } from 'framer-motion';
+import { Bell, LogIn, Loader2 } from 'lucide-react';
+
+interface LoginFormProps {
+  onLogin: (userId: string) => Promise<void>;
+}
+
+export function LoginForm({ onLogin }: LoginFormProps) {
+  const [userId, setUserId] = useState(localStorage.getItem('user_id') || '');
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      await onLogin(userId);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <motion.div 
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      className="min-h-screen bg-linear-to-br from-blue-50 via-white to-indigo-50 flex items-center justify-center p-4"
+    >
+      <motion.div 
+        initial={{ scale: 0.9, y: 20 }}
+        animate={{ scale: 1, y: 0 }}
+        transition={{ delay: 0.1 }}
+        className="bg-white p-8 rounded-2xl shadow-xl border border-gray-100 w-full max-w-md"
+      >
+        <motion.div 
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
+          transition={{ delay: 0.2, type: "spring" }}
+          className="flex justify-center mb-6"
+        >
+          <div className="bg-linear-to-br from-blue-500 to-indigo-600 p-4 rounded-2xl shadow-lg">
+            <Bell className="w-10 h-10 text-white" />
+          </div>
+        </motion.div>
+        <motion.h1 
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+          className="text-3xl font-bold text-center mb-2 bg-linear-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent"
+        >
+          Notificações
+        </motion.h1>
+        <motion.p 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.4 }}
+          className="text-center text-gray-500 text-sm mb-8"
+        >
+          Entre para visualizar suas notificações
+        </motion.p>
+        <form onSubmit={handleSubmit} className="space-y-5">
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.5 }}
+          >
+            <label className="block text-sm font-semibold text-gray-700 mb-2">ID de Usuário</label>
+            <input 
+              type="text" 
+              value={userId}
+              onChange={(e) => setUserId(e.target.value)}
+              placeholder="Ex: usuario_teste"
+              className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+              required 
+            />
+          </motion.div>
+          <motion.button 
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.6 }}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            type="submit" 
+            disabled={loading}
+            className="w-full bg-linear-to-r from-blue-600 to-indigo-600 text-white py-3 rounded-xl hover:from-blue-700 hover:to-indigo-700 transition-all shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed flex justify-center items-center gap-2 font-medium"
+          >
+            {loading ? <Loader2 className="animate-spin w-5 h-5"/> : <LogIn className="w-5 h-5" />}
+            {loading ? 'Entrando...' : 'Entrar'}
+          </motion.button>
+        </form>
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.7 }}
+          className="mt-6 text-center text-xs text-gray-400"
+        >
+          Sistema de Gestão de Notificações v1.0
+        </motion.div>
+      </motion.div>
+    </motion.div>
+  );
+}
