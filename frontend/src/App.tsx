@@ -165,11 +165,14 @@ function App() {
           onRemove={removeNotification}
         />
 
-        <Pagination
-          currentPage={page}
-          totalPages={totalPages}
-          onPageChange={fetchNotifications}
-        />
+        {/* Só mostra paginação se não houver filtros ativos e houver notificações */}
+        {!searchTerm && filterCategory === 'all' && filterStatus === 'all' && notifications.length > 0 && (
+          <Pagination
+            currentPage={page}
+            totalPages={totalPages}
+            onPageChange={fetchNotifications}
+          />
+        )}
       </main>
 
       <DeleteConfirmModal
